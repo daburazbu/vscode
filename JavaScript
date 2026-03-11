@@ -1,0 +1,1136 @@
+const modal = document.getElementById("modal");
+const openBtn = document.getElementById("openModal");
+const closeBtn = document.getElementById("closeModal");
+
+let focusableElements;
+let firstElement;
+let lastElement;
+
+openBtn.addEventListener("click", () => {
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+
+  focusableElements = modal.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+
+  firstElement = focusableElements[0];
+  lastElement = focusableElements[focusableElements.length - 1];
+
+  firstElement.focus();
+});
+
+closeBtn.addEventListener("click", closeModal);
+
+function closeModal() {
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
+  openBtn.focus();
+}
+
+document.addEventListener("keydown", (e) => {
+
+  if (!modal.classList.contains("active")) return;
+
+  // ESC zatvara modal
+  if (e.key === "Escape") {
+    closeModal();
+  }
+
+  // Focus trap
+  if (e.key === "Tab") {
+
+    if (e.shiftKey) {
+      if (document.activeElement === firstElement) {
+        e.preventDefault();
+        lastElement.focus();
+      }
+    } else {
+      if (document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement.focus();
+      }
+    }
+
+  }
+}); 
+const form = document.getElementById("loginForm");
+
+form.addEventListener("submit", function (e) {
+
+  e.preventDefault();
+
+  const email = document.getElementById("email");
+  const password = document.getElementById("password");
+
+  const emailError = document.getElementById("email-error");
+  const passwordError = document.getElementById("password-error");
+
+  let isValid = true;
+
+  // EMAIL VALIDACIJA
+  if (!email.value.trim()) {
+    emailError.textContent = "Email je obavezan.";
+    email.setAttribute("aria-invalid", "true");
+    isValid = false;
+  } else if (!email.value.includes("@")) {
+    emailError.textContent = "Unesite ispravnu email adresu.";
+    email.setAttribute("aria-invalid", "true");
+    isValid = false;
+  } else {
+    emailError.textContent = "";
+    email.removeAttribute("aria-invalid");
+  }
+
+  // PASSWORD VALIDACIJA
+  if (!password.value.trim()) {
+    passwordError.textContent = "Lozinka je obavezna.";
+    password.setAttribute("aria-invalid", "true");
+    isValid = false;
+  } else if (password.value.length < 6) {
+    passwordError.textContent = "Lozinka mora imati najmanje 6 znakova.";
+    password.setAttribute("aria-invalid", "true");
+    isValid = false;
+  } else {
+    passwordError.textContent = "";
+    password.removeAttribute("aria-invalid");
+  }
+
+  // Ako je sve ispravno
+  if (isValid) {
+    form.submit();
+  }
+
+}); 
+if (!isValid) {
+  const firstError = form.querySelector('[aria-invalid="true"]');
+  firstError.focus();
+} 
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pristupačna prijava</title>
+<style>
+body {
+  font-family: system-ui, sans-serif;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+main {
+  background: #fff;
+  padding: 32px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin-bottom: 24px;
+}
+
+form div {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input:focus {
+  border-color: #005fcc;
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
+input[aria-invalid="true"] {
+  border-color: #b00020;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #005fcc;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: #0045a3;
+}
+
+.error {
+  color: #b00020;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  display: block;
+}
+
+.success {
+  color: #007700;
+  font-size: 0.95rem;
+  margin-top: 4px;
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<main>
+  <h1 id="login-title">Prijava na račun</h1>
+
+  <form id="loginForm" novalidate aria-labelledby="login-title" aria-describedby="form-instructions">
+    <p id="form-instructions">Molimo unesite email i lozinku. Sva polja su obavezna.</p>
+
+    <div>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required aria-describedby="email-error">
+      <span id="email-error" class="error" aria-live="polite"></span>
+    </div>
+
+    <div>
+      <label for="password">Lozinka</label>
+      <input type="password" id="password" name="password" required minlength="6" aria-describedby="password-error">
+      <span id="password-error" class="error" aria-live="polite"></span>
+    </div>
+
+    <button type="submit">Prijava</button>
+    <span id="success-message" class="success" aria-live="polite"></span>
+  </form>
+</main>
+
+<script>
+const form = document.getElementById("loginForm");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const emailError = document.getElementById("email-error");
+const passwordError = document.getElementById("password-error");
+const successMessage = document.getElementById("success-message");
+
+// Funkcija za provjeru emaila
+function validateEmail() {
+  if (!email.value.trim()) {
+    emailError.textContent = "Email je obavezan.";
+    email.setAttribute("aria-invalid", "true");
+    return false;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+    emailError.textContent = "Unesite ispravnu email adresu.";
+    email.setAttribute("aria-invalid", "true");
+    return false;
+  } else {
+    emailError.textContent = "";
+    email.removeAttribute("aria-invalid");
+    return true;
+  }
+}
+
+// Funkcija za provjeru lozinke
+function validatePassword() {
+  if (!password.value.trim()) {
+    passwordError.textContent = "Lozinka je obavezna.";
+    password.setAttribute("aria-invalid", "true");
+    return false;
+  } else if (password.value.length < 6) {
+    passwordError.textContent = "Lozinka mora imati najmanje 6 znakova.";
+    password.setAttribute("aria-invalid", "true");
+    return false;
+  } else {
+    passwordError.textContent = "";
+    password.removeAttribute("aria-invalid");
+    return true;
+  }
+}
+
+// Real-time validacija dok korisnik tipka
+email.addEventListener("input", validateEmail);
+password.addEventListener("input", validatePassword);
+
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+  const emailValid = validateEmail();
+  const passwordValid = validatePassword();
+
+  if (!emailValid) {
+    email.focus();
+    return;
+  } else if (!passwordValid) {
+    password.focus();
+    return;
+  }
+
+  // Ako je sve ispravno
+  successMessage.textContent = "Prijava uspješna! (simulacija)";
+  // Ovdje možeš izvršiti stvarni submit: form.submit();
+});
+</script>
+
+</body>
+</html> 
+
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pristupačna prijava – Napredna verzija</title>
+<style>
+body {
+  font-family: system-ui, sans-serif;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+main {
+  background: #fff;
+  padding: 32px;
+  border-radius: 8px;
+  max-width: 450px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin-bottom: 16px;
+}
+
+#error-summary {
+  border: 2px solid #b00020;
+  background: #ffe6e6;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  display: none;
+}
+
+#error-summary ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+form div {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input:focus {
+  border-color: #005fcc;
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
+input[aria-invalid="true"] {
+  border-color: #b00020;
+}
+
+button {
+  padding: 12px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #005fcc;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: #0045a3;
+}
+
+.toggle-password {
+  margin-top: 8px;
+  background: #eee;
+  color: #000;
+}
+
+.error {
+  color: #b00020;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  display: block;
+}
+
+.success {
+  color: #007700;
+  font-size: 0.95rem;
+  margin-top: 4px;
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<main>
+  <h1 id="login-title">Prijava na račun</h1>
+
+  <!-- Error summary za screen readere -->
+  <div id="error-summary" role="alert" aria-live="assertive" tabindex="-1">
+    <p>Pronađene su greške:</p>
+    <ul></ul>
+  </div>
+
+  <form id="loginForm" novalidate aria-labelledby="login-title" aria-describedby="form-instructions">
+    <p id="form-instructions">Molimo unesite email i lozinku. Sva polja su obavezna.</p>
+
+    <div>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required aria-describedby="email-error">
+      <span id="email-error" class="error" aria-live="polite"></span>
+    </div>
+
+    <div>
+      <label for="password">Lozinka</label>
+      <input type="password" id="password" name="password" required minlength="6" aria-describedby="password-error">
+      <button type="button" class="toggle-password" aria-pressed="false">Prikaži lozinku</button>
+      <span id="password-error" class="error" aria-live="polite"></span>
+    </div>
+
+    <button type="submit">Prijava</button>
+    <span id="success-message" class="success" aria-live="polite"></span>
+  </form>
+</main>
+
+<script>
+const form = document.getElementById("loginForm");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const emailError = document.getElementById("email-error");
+const passwordError = document.getElementById("password-error");
+const successMessage = document.getElementById("success-message");
+const errorSummary = document.getElementById("error-summary");
+const errorList = errorSummary.querySelector("ul");
+const togglePasswordBtn = document.querySelector(".toggle-password");
+
+// Funkcija za validaciju emaila
+function validateEmail() {
+  if (!email.value.trim()) {
+    emailError.textContent = "Email je obavezan.";
+    email.setAttribute("aria-invalid", "true");
+    return false;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+    emailError.textContent = "Unesite ispravnu email adresu.";
+    email.setAttribute("aria-invalid", "true");
+    return false;
+  } else {
+    emailError.textContent = "";
+    email.removeAttribute("aria-invalid");
+    return true;
+  }
+}
+
+// Funkcija za validaciju lozinke
+function validatePassword() {
+  if (!password.value.trim()) {
+    passwordError.textContent = "Lozinka je obavezna.";
+    password.setAttribute("aria-invalid", "true");
+    return false;
+  } else if (password.value.length < 6) {
+    passwordError.textContent = "Lozinka mora imati najmanje 6 znakova.";
+    password.setAttribute("aria-invalid", "true");
+    return false;
+  } else {
+    passwordError.textContent = "";
+    password.removeAttribute("aria-invalid");
+    return true;
+  }
+}
+
+// Real-time validacija
+email.addEventListener("input", validateEmail);
+password.addEventListener("input", validatePassword);
+
+// Toggle show/hide password
+togglePasswordBtn.addEventListener("click", () => {
+  if (password.type === "password") {
+    password.type = "text";
+    togglePasswordBtn.textContent = "Sakrij lozinku";
+    togglePasswordBtn.setAttribute("aria-pressed", "true");
+  } else {
+    password.type = "password";
+    togglePasswordBtn.textContent = "Prikaži lozinku";
+    togglePasswordBtn.setAttribute("aria-pressed", "false");
+  }
+});
+
+// Submit forme s error summary
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+  errorList.innerHTML = "";
+  errorSummary.style.display = "none";
+
+  const emailValid = validateEmail();
+  const passwordValid = validatePassword();
+
+  let firstErrorField = null;
+
+  if (!emailValid) {
+    errorList.innerHTML += "<li>Email: " + emailError.textContent + "</li>";
+    if (!firstErrorField) firstErrorField = email;
+  }
+  if (!passwordValid) {
+    errorList.innerHTML += "<li>Lozinka: " + passwordError.textContent + "</li>";
+    if (!firstErrorField) firstErrorField = password;
+  }
+
+  if (!emailValid || !passwordValid) {
+    errorSummary.style.display = "block";
+    errorSummary.focus(); // Fokus na error summary za screen reader
+    firstErrorField.focus(); // Fokus na prvo polje s greškom
+    return;
+  }
+
+  // Ako je forma validna
+  successMessage.textContent = "Prijava uspješna! (simulacija)";
+  errorSummary.style.display = "none";
+});
+</script>
+
+</body>
+</html>  
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pristupačna prijava</title>
+<style>
+body {
+  font-family: system-ui, sans-serif;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  line-height: 1.5;
+}
+
+main {
+  background: #fff;
+  padding: 32px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+h1 {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+form div {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input:focus {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
+input[aria-invalid="true"] {
+  border-color: #b00020;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #005fcc;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover,
+button:focus {
+  background: #0045a3;
+}
+
+.error {
+  color: #b00020;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  display: block;
+}
+
+.success {
+  color: #007700;
+  font-size: 0.95rem;
+  margin-top: 8px;
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<main>
+  <h1 id="login-title">Prijava na račun</h1>
+
+  <form id="loginForm" novalidate aria-labelledby="login-title">
+    <div>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required aria-describedby="email-error">
+      <span id="email-error" class="error" aria-live="polite"></span>
+    </div>
+
+    <div>
+      <label for="password">Lozinka</label>
+      <input type="password" id="password" name="password" required minlength="6" aria-describedby="password-error">
+      <span id="password-error" class="error" aria-live="polite"></span>
+    </div>
+
+    <button type="submit">Prijava</button>
+    <span id="success-message" class="success" aria-live="polite"></span>
+  </form>
+</main>
+
+<script>
+const form = document.getElementById("loginForm");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const emailError = document.getElementById("email-error");
+const passwordError = document.getElementById("password-error");
+const successMessage = document.getElementById("success-message");
+
+// Funkcija za validaciju emaila
+function validateEmail() {
+  if (!email.value.trim()) {
+    emailError.textContent = "Email je obavezan.";
+    email.setAttribute("aria-invalid", "true");
+    return false;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+    emailError.textContent = "Unesite ispravnu email adresu.";
+    email.setAttribute("aria-invalid", "true");
+    return false;
+  } else {
+    emailError.textContent = "";
+    email.removeAttribute("aria-invalid");
+    return true;
+  }
+}
+
+// Funkcija za validaciju lozinke
+function validatePassword() {
+  if (!password.value.trim()) {
+    passwordError.textContent = "Lozinka je obavezna.";
+    password.setAttribute("aria-invalid", "true");
+    return false;
+  } else if (password.value.length < 6) {
+    passwordError.textContent = "Lozinka mora imati najmanje 6 znakova.";
+    password.setAttribute("aria-invalid", "true");
+    return false;
+  } else {
+    passwordError.textContent = "";
+    password.removeAttribute("aria-invalid");
+    return true;
+  }
+}
+
+// Real-time validacija
+email.addEventListener("input", validateEmail);
+password.addEventListener("input", validatePassword);
+
+// Submit forme
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+  const emailValid = validateEmail();
+  const passwordValid = validatePassword();
+
+  if (!emailValid) {
+    email.focus();
+    return;
+  } else if (!passwordValid) {
+    password.focus();
+    return;
+  }
+
+  // Ako je sve validno
+  successMessage.textContent = "Prijava uspješna! (simulacija)";
+});
+</script>
+
+</body>
+</html> 
+
+
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pristupačna prijava</title>
+<style>
+body {
+  font-family: system-ui, sans-serif;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  line-height: 1.5;
+}
+
+main {
+  background: #fff;
+  padding: 32px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+h1 {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+form div {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input:focus {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
+input[aria-invalid="true"] {
+  border-color: #b00020;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #005fcc;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover,
+button:focus {
+  background: #0045a3;
+}
+
+.error {
+  color: #b00020;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  display: block;
+}
+
+.success {
+  color: #007700;
+  font-size: 0.95rem;
+  margin-top: 8px;
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<main>
+  <h1 id="login-title">Prijava na račun</h1>
+
+  <form id="loginForm" novalidate aria-labelledby="login-title">
+    <div>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required aria-describedby="email-error">
+      <span id="email-error" class="error" aria-live="polite"></span>
+    </div>
+
+    <div>
+      <label for="password">Lozinka</label>
+      <input type="password" id="password" name="password" required minlength="6" aria-describedby="password-error">
+      <span id="password-error" class="error" aria-live="polite"></span>
+    </div>
+
+    <button type="submit">Prijava</button>
+    <span id="success-message" class="success" aria-live="polite"></span>
+  </form>
+</main>
+
+<script>
+const form = document.getElementById("loginForm");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const emailError = document.getElementById("email-error");
+const passwordError = document.getElementById("password-error");
+const successMessage = document.getElementById("success-message");
+
+// Funkcija za validaciju emaila
+function validateEmail() {
+  if (!email.value.trim()) {
+    emailError.textContent = "Email je obavezan.";
+    email.setAttribute("aria-invalid", "true");
+    return false;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+    emailError.textContent = "Unesite ispravnu email adresu.";
+    email.setAttribute("aria-invalid", "true");
+    return false;
+  } else {
+    emailError.textContent = "";
+    email.removeAttribute("aria-invalid");
+    return true;
+  }
+}
+
+// Funkcija za validaciju lozinke
+function validatePassword() {
+  if (!password.value.trim()) {
+    passwordError.textContent = "Lozinka je obavezna.";
+    password.setAttribute("aria-invalid", "true");
+    return false;
+  } else if (password.value.length < 6) {
+    passwordError.textContent = "Lozinka mora imati najmanje 6 znakova.";
+    password.setAttribute("aria-invalid", "true");
+    return false;
+  } else {
+    passwordError.textContent = "";
+    password.removeAttribute("aria-invalid");
+    return true;
+  }
+}
+
+// Real-time validacija
+email.addEventListener("input", validateEmail);
+password.addEventListener("input", validatePassword);
+
+// Submit forme
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+  const emailValid = validateEmail();
+  const passwordValid = validatePassword();
+
+  if (!emailValid) {
+    email.focus();
+    return;
+  } else if (!passwordValid) {
+    password.focus();
+    return;
+  }
+
+  // Ako je sve validno
+  successMessage.textContent = "Prijava uspješna! (simulacija)";
+});
+</script>
+
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pristupačna prijava – napredno</title>
+<style>
+body {
+  font-family: system-ui, sans-serif;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  line-height: 1.5;
+}
+
+main {
+  background: #fff;
+  padding: 32px;
+  border-radius: 8px;
+  max-width: 450px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin-bottom: 16px;
+}
+
+#error-summary {
+  border: 2px solid #b00020;
+  background: #ffe6e6;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  display: none;
+}
+
+#error-summary ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+form div {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input:focus {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
+input[aria-invalid="true"] {
+  border-color: #b00020;
+}
+
+button {
+  padding: 12px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #005fcc;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover,
+button:focus {
+  background: #0045a3;
+}
+
+.toggle-password {
+  margin-top: 8px;
+  background: #eee;
+  color: #000;
+}
+
+.error {
+  color: #b00020;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  display: block;
+}
+
+.success {
+  color: #007700;
+  font-size: 0.95rem;
+  margin-top: 8px;
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<main>
+  <h1 id="login-title">Prijava na račun</h1>
+
+  <!-- Error summary -->
+  <div id="error-summary" role="alert" aria-live="assertive" tabindex="-1">
+    <p>Pronađene su greške:</p>
+    <ul></ul>
+  </div>
+
+  <form id="loginForm" novalidate aria-labelledby="login-title" aria-describedby="form-instructions">
+    <p id="form-instructions">Molimo unesite email i lozinku. Sva polja su obavezna.</p>
+
+    <div>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required aria-describedby="email-error">
+      <span id="email-error" class="error" aria-live="polite"></span>
+    </div>
+
+    <div>
+      <label for="password">Lozinka</label>
+      <input type="password" id="password" name="password" required minlength="6" aria-describedby="password-error">
+      <button type="button" class="toggle-password" aria-pressed="false">Prikaži lozinku</button>
+      <span id="password-error" class="error" aria-live="polite"></span>
+    </div>
+
+    <button type="submit">Prijava</button>
+    <span id="success-message" class="success" aria-live="polite"></span>
+  </form>
+</main>
+
+<script>
+const form = document.getElementById("loginForm");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const emailError = document.getElementById("email-error");
+const passwordError = document.getElementById("password-error");
+const successMessage = document.getElementById("success-message");
+const errorSummary = document.getElementById("error-summary");
+const errorList = errorSummary.querySelector("ul");
+const togglePasswordBtn = document.querySelector(".toggle-password");
+
+// Validacija emaila
+function validateEmail() {
+  if (!email.value.trim()) {
+    emailError.textContent = "Email je obavezan.";
+    email.setAttribute("aria-invalid", "true");
+    return false;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+    emailError.textContent = "Unesite ispravnu email adresu.";
+    email.setAttribute("aria-invalid", "true");
+    return false;
+  } else {
+    emailError.textContent = "";
+    email.removeAttribute("aria-invalid");
+    return true;
+  }
+}
+
+// Validacija lozinke
+function validatePassword() {
+  if (!password.value.trim()) {
+    passwordError.textContent = "Lozinka je obavezna.";
+    password.setAttribute("aria-invalid", "true");
+    return false;
+  } else if (password.value.length < 6) {
+    passwordError.textContent = "Lozinka mora imati najmanje 6 znakova.";
+    password.setAttribute("aria-invalid", "true");
+    return false;
+  } else {
+    passwordError.textContent = "";
+    password.removeAttribute("aria-invalid");
+    return true;
+  }
+}
+
+// Real-time validacija
+email.addEventListener("input", validateEmail);
+password.addEventListener("input", validatePassword);
+
+// Toggle password
+togglePasswordBtn.addEventListener("click", () => {
+  if (password.type === "password") {
+    password.type = "text";
+    togglePasswordBtn.textContent = "Sakrij lozinku";
+    togglePasswordBtn.setAttribute("aria-pressed", "true");
+  } else {
+    password.type = "password";
+    togglePasswordBtn.textContent = "Prikaži lozinku";
+    togglePasswordBtn.setAttribute("aria-pressed", "false");
+  }
+});
+
+// Submit forme s error summary
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+  errorList.innerHTML = "";
+  errorSummary.style.display = "none";
+
+  const emailValid = validateEmail();
+  const passwordValid = validatePassword();
+  let firstErrorField = null;
+
+  if (!emailValid) {
+    errorList.innerHTML += "<li>Email: " + emailError.textContent + "</li>";
+    if (!firstErrorField) firstErrorField = email;
+  }
+  if (!passwordValid) {
+    errorList.innerHTML += "<li>Lozinka: " + passwordError.textContent + "</li>";
+    if (!firstErrorField) firstErrorField = password;
+  }
+
+  if (!emailValid || !passwordValid) {
+    errorSummary.style.display = "block";
+    errorSummary.focus();
+    firstErrorField.focus();
+    return;
+  }
+
+  // Forma validna
+  successMessage.textContent = "Prijava uspješna! (simulacija)";
+  errorSummary.style.display = "none";
+});
+</script>
+
+</body>
+</html>
+
+
+
